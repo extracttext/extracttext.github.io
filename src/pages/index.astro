@@ -1,0 +1,44 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import Header from '@/components/Header.astro';
+import OcrWorkspace from '@/components/OcrWorkspace';
+import Features from '@/components/Features.astro';
+import HowItWorks from '@/components/HowItWorks.astro';
+import Faq from '@/components/Faq.astro';
+import Footer from '@/components/Footer.astro';
+import { useTranslations } from '@/i18n/utils';
+import { ui } from '@/i18n/ui';
+
+const t = useTranslations('en');
+
+// Build flat translations record for the React island
+const ocrTranslations: Record<string, string> = {};
+for (const key of Object.keys(ui.en) as Array<keyof typeof ui.en>) {
+  if (key.startsWith('ocr.')) {
+    ocrTranslations[key] = t(key);
+  }
+}
+---
+
+<Layout>
+  <Header />
+  <main>
+    <!-- Semantic Hero Section for SEO & User Intent -->
+    <section class="pt-10 pb-2 px-4 text-center">
+      <div class="mx-auto max-w-4xl">
+        <h1 class="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-dusty-rose dark:text-slate-100 mb-4 leading-tight">
+          {t('hero.h1')}
+        </h1>
+        <p class="text-base sm:text-lg text-dusty-rose/80 dark:text-slate-300 max-w-2xl mx-auto leading-relaxed">
+          {t('hero.subtitle')}
+        </p>
+      </div>
+    </section>
+
+    <OcrWorkspace client:load t={ocrTranslations} />
+    <Features />
+    <HowItWorks />
+    <Faq />
+  </main>
+  <Footer />
+</Layout>

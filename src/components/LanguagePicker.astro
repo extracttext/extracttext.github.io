@@ -1,0 +1,51 @@
+---
+import { getLangFromUrl, useTranslations, getLocalizedPath, getLocaleList } from '@/i18n/utils';
+import type { Locale } from '@/i18n/ui';
+
+const lang = getLangFromUrl(Astro.url) as Locale;
+const t = useTranslations(lang);
+const locales = getLocaleList();
+---
+
+<div class="relative">
+  <label class="sr-only">{t('nav.language')}</label>
+  <select
+    data-lang-picker
+    aria-label={t('nav.language')}
+    class="appearance-none rounded-md border border-muted-purple/40 dark:border-slate-700 bg-white dark:bg-slate-900 text-dusty-rose dark:text-slate-200 text-sm pl-3 pr-8 py-2 cursor-pointer hover:border-muted-purple dark:hover:border-slate-500 focus:outline-none focus:ring-2 focus:ring-sky-blue dark:focus:ring-muted-purple transition-colors"
+  >
+    {locales.map((locale) => (
+      <option
+        value={getLocalizedPath(locale.code, '/')}
+        selected={locale.code === lang}
+      >
+        {locale.label}
+      </option>
+    ))}
+  </select>
+  <!-- Dropdown chevron -->
+  <svg
+    class="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-purple dark:text-slate-400"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    viewBox="0 0 24 24"
+    aria-hidden="true"
+  >
+    <path stroke-linecap="round" stroke-linejoin="round" d="M6 9l6 6 6-6" />
+  </svg>
+</div>
+
+<script is:inline>
+  (function () {
+    var selects = document.querySelectorAll('[data-lang-picker]');
+    for (var i = 0; i < selects.length; i++) {
+      selects[i].addEventListener('change', function (e) {
+        var target = e.target;
+        if (target && target.value) {
+          window.location.href = target.value;
+        }
+      });
+    }
+  })();
+</script>

@@ -1,0 +1,48 @@
+---
+import { getLangFromUrl, useTranslations } from '@/i18n/utils';
+import type { Locale } from '@/i18n/ui';
+
+const lang = getLangFromUrl(Astro.url) as Locale;
+const t = useTranslations(lang);
+
+const faqs = [
+  { q: t('faq.q1'), a: t('faq.a1') },
+  { q: t('faq.q2'), a: t('faq.a2') },
+  { q: t('faq.q3'), a: t('faq.a3') },
+  { q: t('faq.q4'), a: t('faq.a4') },
+  { q: t('faq.q5'), a: t('faq.a5') },
+  { q: t('faq.q6'), a: t('faq.a6') },
+];
+---
+
+<section class="py-16 px-4">
+  <div class="mx-auto max-w-3xl">
+    <h2 class="text-2xl md:text-3xl font-bold text-center mb-10 text-dusty-rose dark:text-slate-100">
+      {t('faq.heading')}
+    </h2>
+    <div class="space-y-3">
+      {faqs.map((faq) => (
+        <details
+          class="group rounded-lg border border-muted-purple/20 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-hidden"
+        >
+          <summary class="flex items-center justify-between cursor-pointer px-5 py-4 text-left font-medium text-dusty-rose dark:text-slate-100 hover:bg-soft-cream/50 dark:hover:bg-slate-800/50 transition-colors select-none">
+            <span>{faq.q}</span>
+            <svg
+              class="w-5 h-5 shrink-0 ml-3 text-muted-purple dark:text-slate-400 transition-transform group-open:rotate-180"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+            </svg>
+          </summary>
+          <div class="px-5 pb-4 pt-1 text-sm leading-relaxed text-dusty-rose/80 dark:text-slate-400 border-t border-muted-purple/10 dark:border-slate-800">
+            {faq.a}
+          </div>
+        </details>
+      ))}
+    </div>
+  </div>
+</section>

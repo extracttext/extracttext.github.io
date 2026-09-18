@@ -1,0 +1,82 @@
+---
+import { getLangFromUrl, useTranslations } from '@/i18n/utils';
+import type { Locale } from '@/i18n/ui';
+
+const lang = getLangFromUrl(Astro.url) as Locale;
+const t = useTranslations(lang);
+
+const steps = [
+  {
+    number: '1',
+    title: t('howto.step1.title'),
+    desc: t('howto.step1.desc'),
+    icon: 'upload',
+  },
+  {
+    number: '2',
+    title: t('howto.step2.title'),
+    desc: t('howto.step2.desc'),
+    icon: 'scan',
+  },
+  {
+    number: '3',
+    title: t('howto.step3.title'),
+    desc: t('howto.step3.desc'),
+    icon: 'copy',
+  },
+];
+---
+
+<section class="py-16 px-4 bg-white/50 dark:bg-slate-900/50">
+  <div class="mx-auto max-w-4xl">
+    <h2 class="text-2xl md:text-3xl font-bold text-center mb-12 text-dusty-rose dark:text-slate-100">
+      {t('howto.heading')}
+    </h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      {steps.map((step, index) => (
+        <div class="flex flex-col items-center text-center relative">
+          {/* Connector line on desktop (between steps) */}
+          {index < steps.length - 1 && (
+            <div class="hidden md:block absolute top-8 left-[calc(50%+2rem)] w-[calc(100%-2rem)] h-px bg-muted-purple/30 dark:bg-slate-700" />
+          )}
+
+          {/* Step number circle */}
+          <div class="w-16 h-16 rounded-full bg-sky-blue dark:bg-muted-purple flex items-center justify-center mb-4 text-white font-bold text-xl shadow-md relative z-10">
+            {step.icon === 'upload' && (
+              <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12" />
+              </svg>
+            )}
+            {step.icon === 'scan' && (
+              <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
+                <polyline points="14 2 14 8 20 8" />
+                <line x1="16" y1="13" x2="8" y2="13" />
+                <line x1="16" y1="17" x2="8" y2="17" />
+                <polyline points="10 9 9 9 8 9" />
+              </svg>
+            )}
+            {step.icon === 'copy' && (
+              <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
+              </svg>
+            )}
+          </div>
+
+          {/* Step label */}
+          <span class="text-xs font-medium text-muted-purple dark:text-muted-purple uppercase tracking-wider mb-1">
+            {step.number}
+          </span>
+
+          <h3 class="text-lg font-semibold mb-2 text-dusty-rose dark:text-slate-100">
+            {step.title}
+          </h3>
+          <p class="text-sm leading-relaxed text-dusty-rose/80 dark:text-slate-400 max-w-xs">
+            {step.desc}
+          </p>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

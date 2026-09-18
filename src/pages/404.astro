@@ -1,0 +1,46 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import Header from '@/components/Header.astro';
+import Footer from '@/components/Footer.astro';
+import { getLangFromUrl, useTranslations } from '@/i18n/utils';
+import type { Locale } from '@/i18n/ui';
+
+const lang = getLangFromUrl(Astro.url) as Locale;
+const t = useTranslations(lang);
+---
+
+<Layout title={t('404.title')}>
+  <Header />
+  <main class="flex-1 flex items-center justify-center min-h-[70vh] px-4">
+    <div class="text-center max-w-md">
+      {/* Large 404 */}
+      <div class="text-8xl md:text-9xl font-bold text-muted-purple/30 dark:text-slate-800 select-none mb-4">
+        404
+      </div>
+
+      {/* Brand icon */}
+      <div class="mx-auto mb-6 w-16 h-16 rounded-2xl bg-muted-purple flex items-center justify-center shadow-lg">
+        <svg width="40" height="40" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <text x="50" y="68" text-anchor="middle" font-family="system-ui, sans-serif" font-weight="700" font-size="56" fill="#FDF4D2">T</text>
+        </svg>
+      </div>
+
+      <h1 class="text-2xl font-bold text-dusty-rose dark:text-slate-100 mb-3">
+        {t('404.title')}
+      </h1>
+      <p class="text-dusty-rose/70 dark:text-slate-400 mb-8 leading-relaxed">
+        {t('404.description')}
+      </p>
+      <a
+        href={lang === 'en' ? '/' : `/${lang}/`}
+        class="inline-flex items-center gap-2 bg-sky-blue dark:bg-muted-purple text-white font-semibold rounded-lg px-6 py-3 hover:brightness-95 transition-all shadow-md hover:shadow-lg"
+      >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1" />
+        </svg>
+        {t('404.button')}
+      </a>
+    </div>
+  </main>
+  <Footer />
+</Layout>

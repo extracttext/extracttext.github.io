@@ -1,0 +1,69 @@
+---
+import { getLangFromUrl, useTranslations } from '@/i18n/utils';
+import type { Locale } from '@/i18n/ui';
+
+const lang = getLangFromUrl(Astro.url) as Locale;
+const t = useTranslations(lang);
+
+const features = [
+  {
+    title: t('features.private.title'),
+    desc: t('features.private.desc'),
+    icon: 'shield',
+    gradient: 'from-muted-purple/20 to-muted-purple/5',
+    iconColor: 'text-muted-purple',
+  },
+  {
+    title: t('features.multilang.title'),
+    desc: t('features.multilang.desc'),
+    icon: 'globe',
+    gradient: 'from-sky-blue/20 to-sky-blue/5',
+    iconColor: 'text-sky-blue',
+  },
+  {
+    title: t('features.instant.title'),
+    desc: t('features.instant.desc'),
+    icon: 'zap',
+    gradient: 'from-dusty-rose/20 to-dusty-rose/5',
+    iconColor: 'text-dusty-rose',
+  },
+];
+---
+
+<section class="py-16 px-4">
+  <div class="mx-auto max-w-6xl">
+    <h2 class="text-2xl md:text-3xl font-bold text-center mb-12 text-dusty-rose dark:text-slate-100">
+      {t('features.heading')}
+    </h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      {features.map((feature) => (
+        <div class={`rounded-xl border border-muted-purple/20 dark:border-slate-800 bg-gradient-to-br ${feature.gradient} dark:from-slate-900 dark:to-slate-950 p-6 transition-shadow hover:shadow-lg`}>
+          <div class={`w-12 h-12 rounded-lg bg-white dark:bg-slate-800 flex items-center justify-center mb-4 ${feature.iconColor}`}>
+            {feature.icon === 'shield' && (
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+              </svg>
+            )}
+            {feature.icon === 'globe' && (
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="12" cy="12" r="10" />
+                <path d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z" />
+              </svg>
+            )}
+            {feature.icon === 'zap' && (
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+              </svg>
+            )}
+          </div>
+          <h3 class="text-lg font-semibold mb-2 text-dusty-rose dark:text-slate-100">
+            {feature.title}
+          </h3>
+          <p class="text-sm leading-relaxed text-dusty-rose/80 dark:text-slate-400">
+            {feature.desc}
+          </p>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
