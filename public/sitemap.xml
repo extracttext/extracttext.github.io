@@ -92,4 +92,12 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://extracttext.github.io/" />
   </url>
 
+  <!-- Educational Guide: How to Convert Image to Text -->
+  <url>
+    <loc>https://extracttext.github.io/how-to-convert-image-to-text/</loc>
+    <lastmod>2026-09-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
 </urlset>

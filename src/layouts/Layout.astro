@@ -5,6 +5,14 @@ import { languages, type Locale } from '@/i18n/ui';
 interface Props {
   title?: string;
   description?: string;
+  canonicalPath?: string;
+  pageType?: 'website' | 'article';
+  isArticle?: boolean;
+  articleSchema?: object;
+  howToSchema?: object;
+  faqSchema?: object;
+  breadcrumbs?: Array<{ name: string; item: string }>;
+  disableRootHreflang?: boolean;
 }
 
 const lang = getLangFromUrl(Astro.url) as Locale;
@@ -12,25 +20,37 @@ const t = useTranslations(lang);
 
 const title = Astro.props.title || t('seo.title');
 const description = Astro.props.description || t('seo.description');
+const pageType = Astro.props.pageType || (Astro.props.isArticle ? 'article' : 'website');
 
 const siteBase = 'https://extracttext.github.io';
-const canonicalPath = lang === 'en' ? '/' : `/${lang}/`;
-const canonicalUrl = `${siteBase}${canonicalPath}`;
+const defaultCanonicalPath = lang === 'en' ? '/' : `/${lang}/`;
+const rawCanonicalPath = Astro.props.canonicalPath ?? defaultCanonicalPath;
+const normalizedCanonical = rawCanonicalPath.startsWith('/') ? rawCanonicalPath : `/${rawCanonicalPath}`;
+const canonicalUrl = `${siteBase}${normalizedCanonical}`;
 const ogImage = 'https://res.cloudinary.com/dpx6w78bt/image/upload/f_auto/q_auto/v1786342039/Online_Tool_rc1ybr.png';
 
-// Build hreflang entries for all locales + x-default
+// Hreflang handling
 const locales = Object.keys(languages) as Locale[];
-const hreflangEntries: Array<{ hreflang: string; href: string }> = locales.map((loc) => ({
-  hreflang: loc,
-  href: `${siteBase}${getLocalizedPath(loc, '/')}`,
-}));
-hreflangEntries.push({
-  hreflang: 'x-default',
-  href: `${siteBase}/`,
-});
+let hreflangEntries: Array<{ hreflang: string; href: string }> = [];
 
-// JSON-LD: WebApplication
-const webAppSchema = {
+if (Astro.props.disableRootHreflang) {
+  hreflangEntries = [
+    { hreflang: lang, href: canonicalUrl },
+    { hreflang: 'x-default', href: canonicalUrl },
+  ];
+} else {
+  hreflangEntries = locales.map((loc) => ({
+    hreflang: loc,
+    href: `${siteBase}${getLocalizedPath(loc, '/')}`,
+  }));
+  hreflangEntries.push({
+    hreflang: 'x-default',
+    href: `${siteBase}/`,
+  });
+}
+
+// JSON-LD: WebApplication (Default for tools)
+const defaultWebAppSchema = {
   '@context': 'https://schema.org',
   '@type': 'WebApplication',
   name: 'ExtractText',
@@ -62,8 +82,8 @@ const webAppSchema = {
   },
 };
 
-// JSON-LD: HowTo
-const howToSchema = {
+// JSON-LD: Default HowTo
+const defaultHowToSchema = {
   '@context': 'https://schema.org',
   '@type': 'HowTo',
   name: t('howto.heading'),
@@ -91,8 +111,8 @@ const howToSchema = {
   ],
 };
 
-// JSON-LD: FAQPage
-const faqSchema = {
+// JSON-LD: Default FAQPage
+const defaultFaqSchema = {
   '@context': 'https://schema.org',
   '@type': 'FAQPage',
   mainEntity: [
@@ -106,22 +126,33 @@ const faqSchema = {
 };
 
 // JSON-LD: BreadcrumbList
-const breadcrumbItemList = [
-  {
-    '@type': 'ListItem',
-    position: 1,
-    name: 'Home',
-    item: `${siteBase}/`,
-  },
-];
+let breadcrumbItemList: Array<{ '@type': string; position: number; name: string; item: string }> = [];
 
-if (lang !== 'en') {
-  breadcrumbItemList.push({
+if (Astro.props.breadcrumbs && Astro.props.breadcrumbs.length > 0) {
+  breadcrumbItemList = Astro.props.breadcrumbs.map((bc, idx) => ({
     '@type': 'ListItem',
-    position: 2,
-    name: languages[lang],
-    item: canonicalUrl,
-  });
+    position: idx + 1,
+    name: bc.name,
+    item: bc.item.startsWith('http') ? bc.item : `${siteBase}${bc.item.startsWith('/') ? bc.item : `/${bc.item}`}`,
+  }));
+} else {
+  breadcrumbItemList = [
+    {
+      '@type': 'ListItem',
+      position: 1,
+      name: 'Home',
+      item: `${siteBase}/`,
+    },
+  ];
+
+  if (lang !== 'en') {
+    breadcrumbItemList.push({
+      '@type': 'ListItem',
+      position: 2,
+      name: languages[lang],
+      item: canonicalUrl,
+    });
+  }
 }
 
 const breadcrumbSchema = {
@@ -139,6 +170,10 @@ const orgSchema = {
   logo: `${siteBase}/favicon.svg`,
   sameAs: ['https://buymeacoffee.com/kisharadilz'],
 };
+
+const activeArticleSchema = Astro.props.articleSchema;
+const activeHowToSchema = Astro.props.howToSchema || (!Astro.props.isArticle ? defaultHowToSchema : undefined);
+const activeFaqSchema = Astro.props.faqSchema || (!Astro.props.isArticle ? defaultFaqSchema : undefined);
 ---
 
 <!doctype html>
@@ -188,13 +223,13 @@ const orgSchema = {
     <!-- Canonical -->
     <link rel="canonical" href={canonicalUrl} />
 
-    <!-- Hreflang Tags (bidirectional + x-default) -->
+    <!-- Hreflang Tags -->
     {hreflangEntries.map((entry) => (
       <link rel="alternate" hreflang={entry.hreflang} href={entry.href} />
     ))}
 
     <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content={pageType} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonicalUrl} />
@@ -205,19 +240,28 @@ const orgSchema = {
     <meta property="og:image:type" content="image/png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content="ExtractText | Free Online Image to Text Converter (OCR)" />
+    <meta property="og:image:alt" content={title} />
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImage} />
-    <meta name="twitter:image:alt" content="ExtractText | Free Online Image to Text Converter (OCR)" />
+    <meta name="twitter:image:alt" content={title} />
 
     <!-- JSON-LD Structured Data -->
-    <script type="application/ld+json" set:html={JSON.stringify(webAppSchema)} />
-    <script type="application/ld+json" set:html={JSON.stringify(howToSchema)} />
-    <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
+    {!Astro.props.isArticle && (
+      <script type="application/ld+json" set:html={JSON.stringify(defaultWebAppSchema)} />
+    )}
+    {activeArticleSchema && (
+      <script type="application/ld+json" set:html={JSON.stringify(activeArticleSchema)} />
+    )}
+    {activeHowToSchema && (
+      <script type="application/ld+json" set:html={JSON.stringify(activeHowToSchema)} />
+    )}
+    {activeFaqSchema && (
+      <script type="application/ld+json" set:html={JSON.stringify(activeFaqSchema)} />
+    )}
     <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
     <script type="application/ld+json" set:html={JSON.stringify(orgSchema)} />
   </head>

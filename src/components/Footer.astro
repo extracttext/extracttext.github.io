@@ -19,6 +19,17 @@ const year = new Date().getFullYear().toString();
       <span>{t('footer.privacy')}</span>
     </div>
 
+    {/* Navigation & Guide Links */}
+    <div class="flex items-center justify-center gap-4 text-sm mb-6 font-medium">
+      <a href="/" class="text-dusty-rose/80 dark:text-slate-300 hover:text-dusty-rose dark:hover:text-white transition-colors">
+        OCR Converter
+      </a>
+      <span class="text-muted-purple/40 dark:text-slate-700">•</span>
+      <a href="/how-to-convert-image-to-text/" class="text-dusty-rose/80 dark:text-slate-300 hover:text-dusty-rose dark:hover:text-white transition-colors">
+        How to Convert Image to Text (Guide)
+      </a>
+    </div>
+
     {/* Language directory */}
     <div class="flex flex-wrap items-center justify-center gap-3 mb-6">
       {locales.map((locale) => (
