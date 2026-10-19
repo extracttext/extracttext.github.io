@@ -130,7 +130,7 @@ ExtractText processes images **entirely in your browser**. No data is sent to an
 
 If you find this tool useful, consider supporting the developer:
 
-**[☕ Buy Me a Coffee](https://buymeacoffee.com/kisharadilz)**
+**[☕ Support on Ko-fi](https://ko-fi.com/kishara)**
 
 ---
 
